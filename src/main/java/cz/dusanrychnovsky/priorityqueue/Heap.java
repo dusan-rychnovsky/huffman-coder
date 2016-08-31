@@ -18,12 +18,15 @@ import java.util.Comparator;
  *
  *  * {@link #add} - O(log n)
  *  * {@link #poll} - O(log n)
+ *  * {@link #getMinKey()} - O(1)
  *  * {@link #size} - O(1)
  *  * {@link #isEmpty} - O(1)
  *
  * @param <T> the type of stored values
  */
 public class Heap<T> {
+
+  // TODO: return Optional instead of null for operations
 
   private final Comparator<Integer> comparator;
   private final ArrayList<Node<T>> data = new ArrayList<>();
@@ -79,6 +82,13 @@ public class Heap<T> {
       currIdx = parentIdx;
       parentIdx = getParentIdx(currIdx);
     }
+  }
+
+  /**
+   * Returns the lowest (according to the comparator) key in the heap.
+   */
+  public Integer getMinKey() {
+    return isEmpty() ? null : data.get(0).getKey();
   }
 
   /**

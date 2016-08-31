@@ -53,6 +53,27 @@ public class HeapTest {
     assertEquals(null, queue.poll());
   }
 
+  @Test
+  public void minHeap_getMinKeyReturnsLowestKey() {
+
+    Heap<String> queue = newMinHeap();
+    queue.add(4, "first-item");
+    queue.add(2, "second-item");
+    queue.add(1, "third-item");
+    queue.add(5, "fourth-item");
+
+    assertEquals(new Integer(1), queue.getMinKey());
+  }
+
+  @Test
+  public void minHeap_getMinKeyReturnsNullOnEmptyQueue() {
+
+    Heap<String> queue = newMinHeap();
+    assertTrue(queue.isEmpty());
+
+    assertEquals(null, queue.getMinKey());
+  }
+
   // ==========================================================================
   // MAX-HEAP
   // ==========================================================================
@@ -96,4 +117,27 @@ public class HeapTest {
 
     assertEquals(null, queue.poll());
   }
+
+  @Test
+  public void maxHeap_getMinKeyReturnsLowestKey() {
+
+    Heap<String> queue = newMaxHeap();
+    queue.add(4, "first-item");
+    queue.add(2, "second-item");
+    queue.add(1, "third-item");
+    queue.add(5, "fourth-item");
+
+    assertEquals(new Integer(5), queue.getMinKey());
+  }
+
+  @Test
+  public void maxHeap_getMinKeyReturnsNullOnEmptyQueue() {
+
+    Heap<String> queue = newMaxHeap();
+    assertTrue(queue.isEmpty());
+
+    assertEquals(null, queue.getMinKey());
+  }
+
+  // TODO add generated tests
 }
