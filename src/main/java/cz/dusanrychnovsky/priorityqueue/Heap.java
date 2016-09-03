@@ -36,14 +36,14 @@ public class Heap<T> {
    * Creates a new min-heap - a heap with elements sorted by lowest key first.
    */
   public static <T> Heap<T> newMinHeap() {
-    return new Heap<>((first, second) -> first - second);
+    return new Heap<>((first, second) -> new Integer(first).compareTo(second));
   }
 
   /**
    * Creates a new max-heap - a heap with elements sorted by highest key first.
    */
   public static <T> Heap<T> newMaxHeap() {
-    return new Heap<>((first, second) -> second - first);
+    return new Heap<>((first, second) -> new Integer(second).compareTo(first));
   }
 
   /**

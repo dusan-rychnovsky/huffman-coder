@@ -2,8 +2,14 @@ package cz.dusanrychnovsky.priorityqueue;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 import static cz.dusanrychnovsky.priorityqueue.Heap.newMaxHeap;
 import static cz.dusanrychnovsky.priorityqueue.Heap.newMinHeap;
+import static java.util.Collections.sort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -139,5 +145,37 @@ public class HeapTest {
     assertEquals(null, queue.getMinKey());
   }
 
-  // TODO add generated tests
+  // ==========================================================================
+  // RANDOMIZED TESTS
+  // ==========================================================================
+
+  @Test
+  public void randomizedTest() {
+
+    Random rnd = new Random(0L);
+
+    Heap<Integer> minHeap = Heap.newMinHeap();
+    Heap<Integer> maxHeap = Heap.newMaxHeap();
+
+    int COUNT = 100_000;
+    List<Integer> keys = new ArrayList<>(COUNT);
+
+    for (int i = 0; i < COUNT; i++) {
+      Integer key = rnd.nextInt();
+      keys.add(key);
+      minHeap.add(key, key);
+      maxHeap.add(key, key);
+    }
+
+    sort(keys);
+
+    for (int i = 0; i < COUNT; i++) {
+      assertEquals(keys.get(i), minHeap.getMinKey());
+      minHeap.poll();
+      assertEquals(keys.get(COUNT - i - 1), maxHeap.getMinKey());
+      maxHeap.poll();
+    }
+
+    assertTrue(minHeap.isEmpty());
+  }
 }
