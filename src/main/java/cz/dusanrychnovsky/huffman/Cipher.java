@@ -6,17 +6,16 @@ package cz.dusanrychnovsky.huffman;
  */
 public class Cipher {
 
-  // TODO: one byte can represent up to 8 bits, not just one
-  private final byte[] bytes;
+  private final BitString bits;
   private final Node tree;
 
-  Cipher(byte[] bytes, Node tree) {
-    this.bytes = bytes;
+  Cipher(BitString bits, Node tree) {
+    this.bits = bits;
     this.tree = tree;
   }
 
-  byte[] getBytes() {
-    return bytes;
+  BitString getBits() {
+    return bits;
   }
 
   Node getTree() {

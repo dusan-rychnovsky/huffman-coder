@@ -32,7 +32,7 @@ public class Encoder {
     labelNodes(tree);
 
     Map<Character, byte[]> table = buildTranslationTable(tree);
-    byte[] cipher = encode(text, table);
+    BitString cipher = encode(text, table);
 
     return new Cipher(cipher, tree);
   }
@@ -111,7 +111,15 @@ public class Encoder {
     prefix.remove(prefix.size() - 1);
   }
 
-  private byte[] encode(String text, Map<Character, byte[]> table) {
+  private byte[] toArray(List<Byte> list) {
+    byte[] result = new byte[list.size()];
+    for (int i = 0; i < list.size(); i++) {
+      result[i] = list.get(i);
+    }
+    return result;
+  }
+
+  private BitString encode(String text, Map<Character, byte[]> table) {
     List<Byte> result = new LinkedList<>();
     for (Character ch : text.toCharArray()) {
       byte[] cipher = table.get(ch);
@@ -119,14 +127,6 @@ public class Encoder {
         result.add(b);
       }
     }
-    return toArray(result);
-  }
-
-  private byte[] toArray(List<Byte> list) {
-    byte[] result = new byte[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      result[i] = list.get(i);
-    }
-    return result;
+    return new BitString(result);
   }
 }

@@ -12,14 +12,13 @@ public class Decoder {
   public String decode(Cipher cipher) {
     StringBuilder result = new StringBuilder();
 
-    byte[] bytes = cipher.getBytes();
+    BitString bits = cipher.getBits();
     Node rootNode = cipher.getTree();
 
     Node currNode = rootNode;
-    for (int i = 0; i < bytes.length; i++) {
-      byte currValue = bytes[i];
+    for (byte currBit : bits) {
 
-      if (currValue == 0) {
+      if (currBit == 0) {
         currNode = ((InnerNode) currNode).getLeftNode();
       }
       else {

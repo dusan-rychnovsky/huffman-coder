@@ -35,15 +35,15 @@ public class EncoderTest {
   @Test
   public void randomizedTest() {
 
-    Random rnd = new Random(0);
+    Random rnd = new Random(0L);
 
-    String alphabet = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    int minLength = 100;
-    int maxLength = 1000;
+    int REPETITIONS = 10;
+    String ALPHABET = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    int MIN_LENGTH = 100;
+    int MAX_LENGTH = 1000;
 
-    int COUNT = 100;
-    for (int i = 0; i < COUNT; i++) {
-      String text = randText(rnd, alphabet, randLength(rnd, minLength, maxLength));
+    for (int rep = 0; rep < REPETITIONS; rep++) {
+      String text = randText(rnd, ALPHABET, randLength(rnd, MIN_LENGTH, MAX_LENGTH));
       assertEquals(text, decoder.decode(encoder.encode(text)));
     }
   }

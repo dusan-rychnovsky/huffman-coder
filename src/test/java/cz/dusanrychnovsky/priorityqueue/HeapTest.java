@@ -153,29 +153,33 @@ public class HeapTest {
   public void randomizedTest() {
 
     Random rnd = new Random(0L);
+    int REPETITIONS = 10, SIZE = 10_000;
 
-    Heap<Integer> minHeap = Heap.newMinHeap();
-    Heap<Integer> maxHeap = Heap.newMaxHeap();
+    for (int rep = 0; rep < REPETITIONS; rep++) {
 
-    int COUNT = 100_000;
-    List<Integer> keys = new ArrayList<>(COUNT);
+      Heap<Integer> minHeap = Heap.newMinHeap();
+      Heap<Integer> maxHeap = Heap.newMaxHeap();
 
-    for (int i = 0; i < COUNT; i++) {
-      Integer key = rnd.nextInt();
-      keys.add(key);
-      minHeap.add(key, key);
-      maxHeap.add(key, key);
+      List<Integer> keys = new ArrayList<>(SIZE);
+
+      for (int i = 0; i < SIZE; i++) {
+        Integer key = rnd.nextInt();
+        keys.add(key);
+        minHeap.add(key, key);
+        maxHeap.add(key, key);
+      }
+
+      sort(keys);
+
+      for (int i = 0; i < SIZE; i++) {
+        assertEquals(keys.get(i), minHeap.getMinKey());
+        minHeap.poll();
+        assertEquals(keys.get(SIZE - i - 1), maxHeap.getMinKey());
+        maxHeap.poll();
+      }
+
+      assertTrue(minHeap.isEmpty());
+      assertTrue(maxHeap.isEmpty());
     }
-
-    sort(keys);
-
-    for (int i = 0; i < COUNT; i++) {
-      assertEquals(keys.get(i), minHeap.getMinKey());
-      minHeap.poll();
-      assertEquals(keys.get(COUNT - i - 1), maxHeap.getMinKey());
-      maxHeap.poll();
-    }
-
-    assertTrue(minHeap.isEmpty());
   }
 }
