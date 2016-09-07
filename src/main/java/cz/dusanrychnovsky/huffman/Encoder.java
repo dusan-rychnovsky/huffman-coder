@@ -1,10 +1,7 @@
 package cz.dusanrychnovsky.huffman;
 
-import cz.dusanrychnovsky.priorityqueue.Heap;
-
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,14 +1,13 @@
-package cz.dusanrychnovsky.priorityqueue;
+package cz.dusanrychnovsky.huffman;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import static cz.dusanrychnovsky.priorityqueue.Heap.newMaxHeap;
-import static cz.dusanrychnovsky.priorityqueue.Heap.newMinHeap;
+import static cz.dusanrychnovsky.huffman.Heap.newMaxHeap;
+import static cz.dusanrychnovsky.huffman.Heap.newMinHeap;
 import static java.util.Collections.sort;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

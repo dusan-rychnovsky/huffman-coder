@@ -1,4 +1,4 @@
-package cz.dusanrychnovsky.priorityqueue;
+package cz.dusanrychnovsky.huffman;
 
 import java.util.ArrayList;
 import java.util.Comparator;
