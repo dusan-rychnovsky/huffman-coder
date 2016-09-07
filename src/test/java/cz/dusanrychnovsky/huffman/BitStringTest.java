@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -24,8 +23,57 @@ public class BitStringTest {
 
   @Test
   public void canStoreAnEmptySequence() {
-    BitString bits = new BitString(emptyList());
+    BitString bits = new BitString();
     assertFalse(bits.iterator().hasNext());
+  }
+
+  @Test
+  public void canConcatenateTwoBitStrings() {
+
+    List<Byte> firstData = asList((byte) 0, (byte) 1, (byte) 1);
+    BitString firstBits = new BitString(firstData);
+
+    List<Byte> secondData = asList((byte) 1, (byte) 0);
+    BitString secondBits = new BitString(secondData);
+
+    List<Byte> data = new LinkedList<>();
+    data.addAll(firstData);
+    data.addAll(secondData);
+
+    BitString bits = firstBits.append(secondBits);
+
+    assertIteratorEquals(data.iterator(), bits.iterator());
+  }
+
+  private <T> void assertIteratorEquals(Iterator<T> firstIt, Iterator<T> secondIt) {
+    while (firstIt.hasNext()) {
+      assertEquals(firstIt.next(), secondIt.next());
+    }
+    assertFalse(secondIt.hasNext());
+  }
+
+  @Test
+  public void canAppendOnEmptyBitString() {
+
+    BitString emptyBits = new BitString();
+
+    List<Byte> data = asList((byte) 0, (byte) 1, (byte) 1);
+    BitString secondBits = new BitString(data);
+
+    BitString bits = emptyBits.append(secondBits);
+    assertEquals(secondBits, bits);
+  }
+
+  @Test
+  public void canAppendEmptyBitString() {
+
+    List<Byte> data = asList((byte) 0, (byte) 1, (byte) 1);
+    BitString firstBits = new BitString(data);
+
+    BitString emptyBits = new BitString();
+
+    BitString bits = firstBits.append(emptyBits);
+    assertEquals(firstBits, bits);
   }
 
   // ==========================================================================

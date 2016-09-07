@@ -1,5 +1,6 @@
 package cz.dusanrychnovsky.huffman;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,37 +14,74 @@ public class BitString implements Iterable<Byte> {
   private final int size;
 
   /**
+   * Instantiates an empty {@link BitString}.
+   */
+  public BitString() {
+    size = 0;
+    data = new byte[0];
+  }
+
+  /**
    * Instantiates a {@link BitString} representing the given list of bits. In
    * the given list each item should represent a single bit (i.e. should have
    * value of either 0 or 1).
    */
   public BitString(List<Byte> bits) {
     size = bits.size();
-    data = new byte[arrayLength(bits)];
-    int i = 0;
-    byte value = 0, pos = 0;
-    for (Byte bit : bits) {
-      if (bit == 1) {
-        value |= (1 << pos);
-      }
-      pos++;
-      if (pos == 8) {
-        data[i] = value;
-        i++;
-        value = 0;
-        pos = 0;
-      }
-    }
-    if (pos != 0) {
-      data[i] = value;
+    data = new byte[arrayLength(size)];
+    for (int i = 0; i < bits.size(); i++) {
+      set(i, bits.get(i));
     }
   }
 
-  private int arrayLength(List<Byte> bits) {
-    int result = bits.size() / 8;
-    if (bits.size() % 8 != 0) {
+  private int arrayLength(int size) {
+    int result = size / 8;
+    if (size % 8 != 0) {
       result++;
     }
+    return result;
+  }
+
+  private void set(int pos, Byte value) {
+    if (value == 1) {
+      set(pos);
+    }
+    else {
+      clear(pos);
+    }
+  }
+
+  private void set(int pos) {
+    data[pos / 8] |= (1 << (pos % 8));
+  }
+
+  private void clear(int pos) {
+    data[pos / 8] &= ~(1 << (pos % 8));
+  }
+
+  private BitString(int size) {
+    this.size = size;
+    data = new byte[arrayLength(size)];
+  }
+
+  /**
+   * Returns a concatenation of the represented and the given
+   * {@link BitString}s as a new {@link BitString}.
+   */
+  public BitString append(BitString other) {
+
+    BitString result = new BitString(size + other.size);
+    int pos = 0;
+
+    for (byte b : this) {
+      result.set(pos, b);
+      pos++;
+    }
+    for (byte b : other) {
+      result.set(pos, b);
+      pos++;
+    }
+
     return result;
   }
 
@@ -69,5 +107,36 @@ public class BitString implements Iterable<Byte> {
         return (byte) result;
       }
     };
+  }
+
+  @Override
+  public int hashCode() {
+    return data.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+
+    if (!(obj instanceof BitString)) {
+      return false;
+    }
+
+    BitString other = (BitString) obj;
+    return Arrays.equals(data, other.data);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+
+    Iterator<Byte> it = iterator();
+    while (it.hasNext()) {
+      builder.append(it.next());
+      if (it.hasNext()) {
+        builder.append(", ");
+      }
+    }
+
+    return builder.toString();
   }
 }

@@ -31,7 +31,7 @@ public class Encoder {
     tree = sanitizeTree(tree);
     labelNodes(tree);
 
-    Map<Character, byte[]> table = buildTranslationTable(tree);
+    Map<Character, BitString> table = buildTranslationTable(tree);
     BitString cipher = encode(text, table);
 
     return new Cipher(cipher, tree);
@@ -89,8 +89,8 @@ public class Encoder {
     }
   }
 
-  private Map<Character, byte[]> buildTranslationTable(Node tree) {
-    Map<Character, byte[]> result = new HashMap<>();
+  private Map<Character, BitString> buildTranslationTable(Node tree) {
+    Map<Character, BitString> result = new HashMap<>();
     LinkedList<Byte> prefix = new LinkedList<>();
     buildTranslationTable(((InnerNode) tree).getLeftNode(), result, prefix);
     buildTranslationTable(((InnerNode) tree).getRightNode(), result, prefix);
@@ -98,11 +98,11 @@ public class Encoder {
   }
 
   private void buildTranslationTable(
-      Node node, Map<Character, byte[]> acc, LinkedList<Byte> prefix) {
+      Node node, Map<Character, BitString> acc, LinkedList<Byte> prefix) {
 
     prefix.add(node.getLabel());
     if (node instanceof LeafNode) {
-      acc.put(((LeafNode) node).getCharacter(), toArray(prefix));
+      acc.put(((LeafNode) node).getCharacter(), new BitString(prefix));
     }
     if (node instanceof InnerNode) {
       buildTranslationTable(((InnerNode) node).getLeftNode(), acc, prefix);
@@ -111,22 +111,12 @@ public class Encoder {
     prefix.remove(prefix.size() - 1);
   }
 
-  private byte[] toArray(List<Byte> list) {
-    byte[] result = new byte[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      result[i] = list.get(i);
+  private BitString encode(String text, Map<Character, BitString> table) {
+    BitString result = new BitString();
+    for (Character ch : text.toCharArray()) {
+      BitString cipher = table.get(ch);
+      result = result.append(cipher);
     }
     return result;
-  }
-
-  private BitString encode(String text, Map<Character, byte[]> table) {
-    List<Byte> result = new LinkedList<>();
-    for (Character ch : text.toCharArray()) {
-      byte[] cipher = table.get(ch);
-      for (byte b : cipher) {
-        result.add(b);
-      }
-    }
-    return new BitString(result);
   }
 }
