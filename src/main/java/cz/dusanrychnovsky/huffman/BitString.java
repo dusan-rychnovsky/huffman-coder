@@ -1,5 +1,7 @@
 package cz.dusanrychnovsky.huffman;
 
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +36,7 @@ public class BitString implements Iterable<Byte> {
     }
   }
 
-  private int arrayLength(int size) {
+  private static int arrayLength(int size) {
     int result = size / 8;
     if (size % 8 != 0) {
       result++;
@@ -64,6 +66,11 @@ public class BitString implements Iterable<Byte> {
     data = new byte[arrayLength(size)];
   }
 
+  private BitString(int size, byte[] data) {
+    this.size = size;
+    this.data = data;
+  }
+
   /**
    * Returns a concatenation of the represented and the given
    * {@link BitString}s as a new {@link BitString}.
@@ -83,6 +90,41 @@ public class BitString implements Iterable<Byte> {
     }
 
     return result;
+  }
+
+  // ==========================================================================
+  // SAVE TO OUTPUT-STREAM
+  // ==========================================================================
+
+  public void saveTo(OutputStream out) throws IOException {
+    out.write(toBytes(size));
+    out.write(data);
+  }
+
+  private static byte[] toBytes(int value) {
+    return ByteBuffer.allocate(4).putInt(value).array();
+  }
+
+  // ==========================================================================
+  // LOAD FROM INPUT-STREAM
+  // ==========================================================================
+
+  public static BitString loadFrom(InputStream in) throws IOException {
+    int size = readInt(in);
+    byte[] data = new byte[arrayLength(size)];
+    in.read(data);
+
+    return new BitString(size, data);
+  }
+
+  private static int readInt(InputStream in) throws IOException {
+    byte[] bytes = new byte[4];
+    in.read(bytes);
+    return toInt(bytes);
+  }
+
+  private static int toInt(byte[] bytes) {
+    return ByteBuffer.wrap(bytes).getInt();
   }
 
   /**

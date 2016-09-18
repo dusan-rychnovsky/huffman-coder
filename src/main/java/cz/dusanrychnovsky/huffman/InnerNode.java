@@ -1,5 +1,7 @@
 package cz.dusanrychnovsky.huffman;
 
+import static org.apache.commons.lang3.StringUtils.repeat;
+
 class InnerNode extends Node {
 
   // TODO: use lombok all over the place
@@ -18,5 +20,15 @@ class InnerNode extends Node {
 
   public Node getRightNode() {
     return rightNode;
+  }
+
+  @Override
+  public void dump(StringBuilder builder, int level) {
+    builder.append(repeat("--", level));
+    builder.append("[" + getLabel() + "]");
+    builder.append("\n");
+
+    leftNode.dump(builder, level + 1);
+    rightNode.dump(builder, level + 1);
   }
 }

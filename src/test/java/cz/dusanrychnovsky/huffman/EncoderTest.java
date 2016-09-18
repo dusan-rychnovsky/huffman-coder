@@ -2,6 +2,7 @@ package cz.dusanrychnovsky.huffman;
 
 import org.junit.Test;
 
+import java.io.*;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
@@ -12,20 +13,15 @@ public class EncoderTest {
   private final Decoder decoder = new Decoder();
 
   @Test
-  public void encodesAPlainTextToACipher() {
+  public void encodesAPlainTextToACipher() throws IOException {
     String text = "Hello world!";
-    assertEquals(text, decoder.decode(encoder.encode(text)));
+    assertEquals(text, decode(decoder, encode(encoder, text)));
   }
 
   @Test
-  public void encodesASingleCharacterText() {
+  public void encodesASingleCharacterText() throws IOException {
     String text = "aaaaa";
-    assertEquals(text, decoder.decode(encoder.encode(text)));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void failsEncodingEmptyText() {
-    encoder.encode("");
+    assertEquals(text, decode(decoder, encode(encoder, text)));
   }
 
   // ==========================================================================
@@ -33,7 +29,7 @@ public class EncoderTest {
   // ==========================================================================
 
   @Test
-  public void randomizedTest() {
+  public void randomizedTest() throws IOException {
 
     Random rnd = new Random(0L);
 
@@ -44,7 +40,7 @@ public class EncoderTest {
 
     for (int rep = 0; rep < REPETITIONS; rep++) {
       String text = randText(rnd, ALPHABET, randLength(rnd, MIN_LENGTH, MAX_LENGTH));
-      assertEquals(text, decoder.decode(encoder.encode(text)));
+      assertEquals(text, decode(decoder, encode(encoder, text)));
     }
   }
 
@@ -59,4 +55,49 @@ public class EncoderTest {
   private int randLength(Random rnd, int min, int max) {
     return min + rnd.nextInt(max - min + 1);
   }
+
+  // ==========================================================================
+  // UTILS
+  // ==========================================================================
+
+
+  private String decode(Decoder decoder, byte[] cipher) throws IOException {
+
+    InputStream in = new ByteArrayInputStream(cipher);
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    decoder.decode(in, out);
+
+    return new String(out.toByteArray());
+  }
+
+  private byte[] encode(Encoder encoder, String text) throws IOException {
+
+    MultiPassInputStream in = new MultiPassStringInputStream(text);
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    encoder.encode(in, out);
+
+    return out.toByteArray();
+  }
+
+  private static class MultiPassStringInputStream implements MultiPassInputStream {
+
+    private final String value;
+
+    private MultiPassStringInputStream(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public InputStream get() throws IOException {
+      return new ByteArrayInputStream(value.getBytes());
+    }
+
+    @Override
+    public void close() throws IOException {
+      // do nothing
+    }
+  }
+
 }

@@ -1,20 +1,22 @@
 package cz.dusanrychnovsky.huffman;
 
+import java.io.*;
+
 /**
  * Decodes a {@link Cipher} as a {@link String} plain-text using Huffman
  * encoding. Use {@link Encoder} to encode a plain-text to a {@link Cipher}.
  */
 public class Decoder {
 
-  /**
-   * Decodes the given {@link Cipher} to a {@link String} plain-text.
-   */
-  public String decode(Cipher cipher) {
-    StringBuilder result = new StringBuilder();
+  public void decode(InputStream in, OutputStream out)
+      throws IOException {
 
-    BitString bits = cipher.getBits();
-    Node rootNode = cipher.getTree();
+    Tree tree = Tree.loadFrom(in);
+    BitString bits = BitString.loadFrom(in);
 
+    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+
+    Node rootNode = tree.getRootNode();
     Node currNode = rootNode;
     for (byte currBit : bits) {
 
@@ -26,11 +28,11 @@ public class Decoder {
       }
 
       if (currNode instanceof LeafNode) {
-        result.append(((LeafNode) currNode).getCharacter());
+        writer.append(((LeafNode) currNode).getCharacter());
         currNode = rootNode;
       }
     }
 
-    return result.toString();
+    writer.flush();
   }
 }

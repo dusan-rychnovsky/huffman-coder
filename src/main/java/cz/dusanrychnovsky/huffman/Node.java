@@ -1,6 +1,8 @@
 package cz.dusanrychnovsky.huffman;
 
-class Node {
+import java.io.Serializable;
+
+abstract class Node implements Serializable {
 
   // TODO: allow printing trees for debugging
 
@@ -17,4 +19,6 @@ class Node {
   public Node mergeWith(Node other) {
     return new InnerNode(this, other);
   }
+
+  public abstract void dump(StringBuilder builder, int level);
 }

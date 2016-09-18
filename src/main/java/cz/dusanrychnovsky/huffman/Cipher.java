@@ -7,9 +7,9 @@ package cz.dusanrychnovsky.huffman;
 public class Cipher {
 
   private final BitString bits;
-  private final Node tree;
+  private final Tree tree;
 
-  Cipher(BitString bits, Node tree) {
+  Cipher(BitString bits, Tree tree) {
     this.bits = bits;
     this.tree = tree;
   }
@@ -18,7 +18,7 @@ public class Cipher {
     return bits;
   }
 
-  Node getTree() {
+  Tree getTree() {
     return tree;
   }
 }
