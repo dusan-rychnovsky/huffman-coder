@@ -33,10 +33,10 @@ public class Encoder {
     log.info("Building translation table.");
     Map<Character, BitString> table = buildTranslationTable(tree.getRootNode());
 
-    log.info("Generating bit-string.");
-    BitString result = encode(mIn.get(), table);
+    log.info("Generating bit-stream.");
+    BitStream result = encode(mIn.get(), table);
 
-    log.info("Saving bit-string to output.");
+    log.info("Saving bit-stream to output.");
     result.saveTo(out);
 
     log.info("ENCODE done.");
@@ -64,17 +64,17 @@ public class Encoder {
     prefix.remove(prefix.size() - 1);
   }
 
-  private BitString encode(InputStream in, Map<Character, BitString> table)
+  private BitStream encode(InputStream in, Map<Character, BitString> table)
       throws IOException {
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-    BitString result = new BitString();
+    BitStream result = new BitStream();
     int i;
     while ((i = reader.read()) != -1) {
       char ch = (char) i;
       BitString string = table.get(ch);
-      result = result.append(string);
+      result.append(string);
     }
 
     return result;
