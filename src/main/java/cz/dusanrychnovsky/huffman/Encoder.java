@@ -1,5 +1,8 @@
 package cz.dusanrychnovsky.huffman;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,17 +15,31 @@ import java.util.Map;
  */
 public class Encoder {
 
+  private static final Logger log = LoggerFactory.getLogger(Encoder.class);
+
   // TODO add debug logging
 
   public void encode(MultiPassInputStream mIn, OutputStream out)
       throws IOException {
 
+    log.info("Going to run ENCODE.");
+
+    log.info("Building Huffman tree.");
     Tree tree = new Tree.Builder().buildFrom(mIn.get());
+
+    log.info("Saving the tree to output.");
     tree.saveTo(out);
 
+    log.info("Building translation table.");
     Map<Character, BitString> table = buildTranslationTable(tree.getRootNode());
+
+    log.info("Generating bit-string.");
     BitString result = encode(mIn.get(), table);
+
+    log.info("Saving bit-string to output.");
     result.saveTo(out);
+
+    log.info("ENCODE done.");
   }
 
   private Map<Character, BitString> buildTranslationTable(Node tree) {

@@ -1,6 +1,8 @@
 package cz.dusanrychnovsky.huffman;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -9,6 +11,8 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class Tree implements Serializable {
+
+  private static final Logger log = LoggerFactory.getLogger(Tree.class);
 
   private final Node rootNode;
 
@@ -70,11 +74,24 @@ public class Tree implements Serializable {
     public Tree buildFrom(InputStream in) throws IOException {
       BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
+      log.info("Going to build Huffman tree.");
+
+      log.info("Counting occurences.");
       Map<Character, Integer> occurrences = countOccurrences(reader);
+
+      log.info("Building heap.");
       Heap<Node> heap = buildHeap(occurrences);
+
+      log.info("Building tree.");
       Node rootNode = buildTree(heap);
+
+      log.info("Sanitizing tree.");
       rootNode = sanitizeTree(rootNode);
+
+      log.info("Labeling nodes.");
       labelNodes(rootNode);
+
+      log.info("Huffman tree built.");
       return new Tree(rootNode);
     }
 
