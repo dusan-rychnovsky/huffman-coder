@@ -80,7 +80,7 @@ public class Tree implements Serializable {
       Map<Character, Integer> occurrences = countOccurrences(reader);
 
       log.info("Building heap.");
-      Heap<Node> heap = buildHeap(occurrences);
+      Heap<Integer, Node> heap = buildHeap(occurrences);
 
       log.info("Building tree.");
       Node rootNode = buildTree(heap);
@@ -104,15 +104,15 @@ public class Tree implements Serializable {
       return result;
     }
 
-    private Heap<Node> buildHeap(Map<Character, Integer> occurrences) {
-      Heap<Node> result = Heap.newMinHeap();
+    private Heap<Integer, Node> buildHeap(Map<Character, Integer> occurrences) {
+      Heap<Integer, Node> result = Heap.newMinHeap();
       for (Map.Entry<Character, Integer> entry : occurrences.entrySet()) {
         result.add(entry.getValue(), new LeafNode(entry.getKey()));
       }
       return result;
     }
 
-    private Node buildTree(Heap<Node> heap) {
+    private Node buildTree(Heap<Integer, Node> heap) {
       while (heap.size() > 1) {
         Integer firstKey = heap.getMinKey();
         Node firstNode = heap.poll();

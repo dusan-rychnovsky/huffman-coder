@@ -1,12 +1,13 @@
 package cz.dusanrychnovsky.huffman;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
  * Implements an unbounded binary heap.
  *
- * The heap stores (int key, T value) elements ordered by key. A comparator is
+ * The heap stores (K key, V value) elements ordered by key. A comparator is
  * required to determine the actual order of keys. For convenience, two
  * orderings have been pre-defined:
  *
@@ -22,28 +23,27 @@ import java.util.Comparator;
  *  * {@link #size} - O(1)
  *  * {@link #isEmpty} - O(1)
  *
- * @param <T> the type of stored values
  */
-public class Heap<T> {
+public class Heap<K, V> {
 
   // TODO: return Optional instead of null for operations
 
-  private final Comparator<Integer> comparator;
-  private final ArrayList<Node<T>> data = new ArrayList<>();
+  private final Comparator<K> comparator;
+  private final ArrayList<Node<K, V>> data = new ArrayList<>();
   private int size;
 
   /**
    * Creates a new min-heap - a heap with elements sorted by lowest key first.
    */
-  public static <T> Heap<T> newMinHeap() {
-    return new Heap<>((first, second) -> new Integer(first).compareTo(second));
+  public static <K extends Comparable<K>, V> Heap<K, V> newMinHeap() {
+    return new Heap<>(Comparable::compareTo);
   }
 
   /**
    * Creates a new max-heap - a heap with elements sorted by highest key first.
    */
-  public static <T> Heap<T> newMaxHeap() {
-    return new Heap<>((first, second) -> new Integer(second).compareTo(first));
+  public static <K extends Comparable<K>, V> Heap<K, V> newMaxHeap() {
+    return new Heap<>((first, second) -> second.compareTo(first));
   }
 
   /**
@@ -51,7 +51,7 @@ public class Heap<T> {
    * elements sorted by lowest key first, lowest being according to the
    * comparator.
    */
-  public Heap(Comparator<Integer> comparator) {
+  public Heap(Comparator<K> comparator) {
     this.comparator = comparator;
   }
 
@@ -59,7 +59,7 @@ public class Heap<T> {
    * Adds a new value to the heap under the given key. If there already is
    * a value with the same key in the heap, both values will be stored.
    */
-  public void add(int key, T value) {
+  public void add(K key, V value) {
 
     // insert the new node as a last leaf
     data.add(size, new Node<>(key, value));
@@ -68,8 +68,8 @@ public class Heap<T> {
     // move up and fix the heap invariant
     int currIdx = size - 1, parentIdx = getParentIdx(currIdx);
     while (parentIdx != -1) {
-      Node<T> curr = data.get(currIdx);
-      Node<T> parent = data.get(parentIdx);
+      Node<K, V> curr = data.get(currIdx);
+      Node<K, V> parent = data.get(parentIdx);
 
       if (isCorrect(parent, curr)) {
         // the invariant is correct at this level - the whole heap is correct
@@ -87,21 +87,21 @@ public class Heap<T> {
   /**
    * Returns the lowest (according to the comparator) key in the heap.
    */
-  public Integer getMinKey() {
+  public K getMinKey() {
     return isEmpty() ? null : data.get(0).getKey();
   }
 
   /**
    * Retrieves and removes value with lowest (according to the comparator) key.
    */
-  public T poll() {
+  public V poll() {
 
     if (size == 0) {
       return null;
     }
 
     // save root-node value to be returned as the result
-    T result = data.get(0).getValue();
+    V result = data.get(0).getValue();
 
     if (size == 1) {
       size = 0;
@@ -116,8 +116,8 @@ public class Heap<T> {
     // move down and fix the heap invariant
     int currIdx = 0, childIdx = getMinChildIdx(currIdx);
     while (childIdx != -1) {
-      Node<T> curr = data.get(currIdx);
-      Node<T> child = data.get(childIdx);
+      Node<K, V> curr = data.get(currIdx);
+      Node<K, V> child = data.get(childIdx);
 
       if (isCorrect(curr, child)) {
         // the invariant is correct at this level - the whole heap is correct
@@ -149,7 +149,7 @@ public class Heap<T> {
     return size() == 0;
   }
 
-  private boolean isCorrect(Node<T> parent, Node<T> child) {
+  private boolean isCorrect(Node<K, V> parent, Node<K, V> child) {
     return comparator.compare(parent.getKey(), child.getKey()) <= 0;
   }
 
@@ -176,8 +176,8 @@ public class Heap<T> {
       return leftChildIdx;
     }
 
-    int leftChildKey = data.get(leftChildIdx).getKey();
-    int rightChildKey = data.get(rightChildIdx).getKey();
+    K leftChildKey = data.get(leftChildIdx).getKey();
+    K rightChildKey = data.get(rightChildIdx).getKey();
 
     if (comparator.compare(leftChildKey, rightChildKey) <= 0) {
       return leftChildIdx;
@@ -207,21 +207,21 @@ public class Heap<T> {
     }
   }
 
-  private static final class Node<T> {
+  private static final class Node<K, V> {
 
-    private final int key;
-    private final T value;
+    private final K key;
+    private final V value;
 
-    public Node(int key, T value) {
+    public Node(K key, V value) {
       this.key = key;
       this.value = value;
     }
 
-    public int getKey() {
+    public K getKey() {
       return key;
     }
 
-    public T getValue() {
+    public V getValue() {
       return value;
     }
 
