@@ -50,6 +50,8 @@ public class Tree implements Serializable {
   // ==========================================================================
 
   public static Tree loadFrom(InputStream in) throws IOException {
+    log.info("Loading tree from stream.");
+
     int length = readInt(in);
     byte[] bytes = new byte[length];
     in.read(bytes);
@@ -91,10 +93,17 @@ public class Tree implements Serializable {
       log.info("Counting occurences.");
 
       Map<Character, Long> result = new HashMap<>();
+
       int i;
+      long count = 0;
       while ((i = reader.read()) != -1) {
+        count++;
         result.merge((char) i, 1L, (k, v) -> v + 1);
       }
+
+      log.info("### total chars count: " + count);
+      log.info("### unique chars count: " + result.size());
+
       return result;
     }
 

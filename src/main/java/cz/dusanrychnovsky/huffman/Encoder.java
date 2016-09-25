@@ -58,6 +58,7 @@ public class Encoder {
       result += string.size();
     }
 
+    log.info("### total cipher size (bits): " + result);
     return result;
   }
 
