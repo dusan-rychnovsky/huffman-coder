@@ -32,14 +32,14 @@ public class Main {
       return;
     }
 
-    try (MultiPassInputStream mIn = new MultiPassFileInputStream(args[1]);
+    try (MultiPassFileInputStream in = new MultiPassFileInputStream(args[1]);
          OutputStream out = new BufferedOutputStream(new FileOutputStream(args[2]))) {
 
       if (mode == Mode.ENCODE) {
-        new Encoder().encode(mIn, out);
+        new Encoder().encode(in, out);
       }
       else {
-        new Decoder().decode(mIn.get(), out);
+        new Decoder().decode(in, out);
       }
     }
     catch (IOException ex) {

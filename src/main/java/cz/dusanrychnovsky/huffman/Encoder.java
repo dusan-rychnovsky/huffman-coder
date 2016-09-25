@@ -19,13 +19,13 @@ public class Encoder {
 
   // TODO add debug logging
 
-  public void encode(MultiPassInputStream mIn, OutputStream out)
+  public void encode(MultiPassInputStream in, OutputStream out)
       throws IOException {
 
     log.info("Going to run ENCODE.");
 
     log.info("Building Huffman tree.");
-    Tree tree = new Tree.Builder().buildFrom(mIn.get());
+    Tree tree = new Tree.Builder().buildFrom(in);
 
     log.info("Saving the tree to output.");
     tree.saveTo(out);
@@ -34,7 +34,8 @@ public class Encoder {
     Map<Character, BitString> table = buildTranslationTable(tree.getRootNode());
 
     log.info("Generating bit-stream.");
-    BitStream result = encode(mIn.get(), table);
+    in.reset();
+    BitStream result = encode(in, table);
 
     log.info("Saving bit-stream to output.");
     result.saveTo(out);

@@ -81,23 +81,29 @@ public class EncoderTest {
     return out.toByteArray();
   }
 
-  private static class MultiPassStringInputStream implements MultiPassInputStream {
+  private static class MultiPassStringInputStream extends MultiPassInputStream {
 
     private final String value;
+    private ByteArrayInputStream in;
 
     private MultiPassStringInputStream(String value) {
       this.value = value;
-    }
-
-    @Override
-    public InputStream get() throws IOException {
-      return new ByteArrayInputStream(value.getBytes());
+      in = new ByteArrayInputStream(value.getBytes());
     }
 
     @Override
     public void close() throws IOException {
       // do nothing
     }
-  }
 
+    @Override
+    public int read() throws IOException {
+      return in.read();
+    }
+
+    @Override
+    public void reset() throws IOException {
+      in = new ByteArrayInputStream(value.getBytes());
+    }
+  }
 }
