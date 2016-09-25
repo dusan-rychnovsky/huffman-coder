@@ -12,13 +12,14 @@ public class Decoder {
       throws IOException {
 
     Tree tree = Tree.loadFrom(in);
-    BitString bits = BitString.loadFrom(in);
+    BitInputStream bIn = new BitInputStream(in);
 
     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
 
     Node rootNode = tree.getRootNode();
     Node currNode = rootNode;
-    for (byte currBit : bits) {
+    byte currBit;
+    while ((currBit = bIn.read()) != -1) {
 
       if (currBit == 0) {
         currNode = ((InnerNode) currNode).getLeftNode();

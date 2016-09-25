@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -22,28 +23,46 @@ public class Encoder {
   public void encode(MultiPassInputStream in, OutputStream out)
       throws IOException {
 
-    log.info("Going to run ENCODE.");
+    log.info("Running ENCODE.");
 
-    log.info("Building Huffman tree.");
     Tree tree = new Tree.Builder().buildFrom(in);
-
-    log.info("Saving the tree to output.");
     tree.saveTo(out);
 
-    log.info("Building translation table.");
     Map<Character, BitString> table = buildTranslationTable(tree.getRootNode());
 
-    log.info("Generating bit-stream.");
     in.reset();
-    BitStream result = encode(in, table);
+    long totalBitsSize = countSize(in, table);
+    saveTo(totalBitsSize, out);
 
-    log.info("Saving bit-stream to output.");
-    result.saveTo(out);
+    in.reset();
+    encode(in, out, table);
+  }
 
-    log.info("ENCODE done.");
+  private void saveTo(long value, OutputStream out) throws IOException {
+    out.write(toBytes(value));
+  }
+
+  private byte[] toBytes(long value) {
+    return ByteBuffer.allocate(8).putLong(value).array();
+  }
+
+  private long countSize(InputStream in, Map<Character, BitString> table) throws IOException {
+    log.info("Counting total bit size.");
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+    long result = 0;
+    int i;
+    while ((i = reader.read()) != -1) {
+      BitString string = table.get((char) i);
+      result += string.size();
+    }
+
+    return result;
   }
 
   private Map<Character, BitString> buildTranslationTable(Node tree) {
+    log.info("Building translation table.");
     Map<Character, BitString> result = new HashMap<>();
     LinkedList<Byte> prefix = new LinkedList<>();
     buildTranslationTable(((InnerNode) tree).getLeftNode(), result, prefix);
@@ -65,19 +84,19 @@ public class Encoder {
     prefix.remove(prefix.size() - 1);
   }
 
-  private BitStream encode(InputStream in, Map<Character, BitString> table)
+  private void encode(InputStream in, OutputStream out, Map<Character, BitString> table)
       throws IOException {
+    log.info("Encoding the characters.");
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    BitOutputStream bOut = new BitOutputStream(out);
 
-    BitStream result = new BitStream();
     int i;
     while ((i = reader.read()) != -1) {
-      char ch = (char) i;
-      BitString string = table.get(ch);
-      result.append(string);
+      BitString string = table.get((char) i);
+      bOut.append(string);
     }
 
-    return result;
+    bOut.close();
   }
 }

@@ -92,6 +92,10 @@ public class BitString implements Iterable<Byte> {
     return result;
   }
 
+  public int size() {
+    return size;
+  }
+
   // ==========================================================================
   // SAVE TO OUTPUT-STREAM
   // ==========================================================================

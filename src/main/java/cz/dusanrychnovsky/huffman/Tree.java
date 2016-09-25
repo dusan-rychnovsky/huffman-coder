@@ -35,6 +35,7 @@ public class Tree implements Serializable {
   // ==========================================================================
 
   public void saveTo(OutputStream out) throws IOException {
+    log.info("Saving the tree to output.");
     byte[] bytes = SerializationUtils.serialize(this);
     out.write(toBytes(bytes.length));
     out.write(bytes);
@@ -72,51 +73,46 @@ public class Tree implements Serializable {
   public static class Builder {
 
     public Tree buildFrom(InputStream in) throws IOException {
+      log.info("Building Huffman tree.");
+
       BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
-      log.info("Going to build Huffman tree.");
-
-      log.info("Counting occurences.");
-      Map<Character, Integer> occurrences = countOccurrences(reader);
-
-      log.info("Building heap.");
-      Heap<Integer, Node> heap = buildHeap(occurrences);
-
-      log.info("Building tree.");
+      Map<Character, Long> occurrences = countOccurrences(reader);
+      Heap<Long, Node> heap = buildHeap(occurrences);
       Node rootNode = buildTree(heap);
-
-      log.info("Sanitizing tree.");
       rootNode = sanitizeTree(rootNode);
-
-      log.info("Labeling nodes.");
       labelNodes(rootNode);
 
       log.info("Huffman tree built.");
       return new Tree(rootNode);
     }
 
-    private Map<Character, Integer> countOccurrences(Reader reader) throws IOException {
-      Map<Character, Integer> result = new HashMap<>();
+    private Map<Character, Long> countOccurrences(Reader reader) throws IOException {
+      log.info("Counting occurences.");
+
+      Map<Character, Long> result = new HashMap<>();
       int i;
       while ((i = reader.read()) != -1) {
-        result.merge((char) i, 1, (k, v) -> v + 1);
+        result.merge((char) i, 1L, (k, v) -> v + 1);
       }
       return result;
     }
 
-    private Heap<Integer, Node> buildHeap(Map<Character, Integer> occurrences) {
-      Heap<Integer, Node> result = Heap.newMinHeap();
-      for (Map.Entry<Character, Integer> entry : occurrences.entrySet()) {
+    private Heap<Long, Node> buildHeap(Map<Character, Long> occurrences) {
+      log.info("Building heap.");
+      Heap<Long, Node> result = Heap.newMinHeap();
+      for (Map.Entry<Character, Long> entry : occurrences.entrySet()) {
         result.add(entry.getValue(), new LeafNode(entry.getKey()));
       }
       return result;
     }
 
-    private Node buildTree(Heap<Integer, Node> heap) {
+    private Node buildTree(Heap<Long, Node> heap) {
+      log.info("Building tree.");
       while (heap.size() > 1) {
-        Integer firstKey = heap.getMinKey();
+        Long firstKey = heap.getMinKey();
         Node firstNode = heap.poll();
-        Integer secondKey = heap.getMinKey();
+        Long secondKey = heap.getMinKey();
         Node secondNode = heap.poll();
         heap.add(
           firstKey + secondKey,
@@ -127,6 +123,7 @@ public class Tree implements Serializable {
     }
 
     private Node sanitizeTree(Node rootNode) {
+      log.info("Sanitizing tree.");
       if (rootNode instanceof InnerNode) {
         return rootNode;
       }
@@ -136,15 +133,20 @@ public class Tree implements Serializable {
     }
 
     private void labelNodes(Node node) {
+      log.info("Labeling nodes.");
+      label(node);
+    }
+
+    private void label(Node node) {
       if (node instanceof InnerNode) {
         // process left sub-tree
         Node leftNode = ((InnerNode) node).getLeftNode();
         leftNode.setLabel((byte) 0);
-        labelNodes(leftNode);
+        label(leftNode);
         // process right sub-tree
         Node rightNode = ((InnerNode) node).getRightNode();
         rightNode.setLabel((byte) 1);
-        labelNodes(rightNode);
+        label(rightNode);
       }
     }
   }
